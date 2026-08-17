@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: shop-nova-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: USE_MEMORY_DB
+        value: "false"
+      - key: SEED_ON_START
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGO_URI
+        sync: false
+      - key: CLIENT_ORIGIN
+        sync: false
