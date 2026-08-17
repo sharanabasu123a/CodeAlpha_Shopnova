@@ -4,6 +4,7 @@ import { FiShoppingBag, FiTrash2, FiMinus, FiPlus, FiCreditCard, FiSmartphone, F
 import { motion } from 'framer-motion';
 import { useCart } from '../context/cartStore';
 import { api, apiErrorMessage } from '../lib/api';
+import { usePreferences } from '../context/preferencesStore';
 
 const PAYMENTS = [
   { id: 'UPI', label: 'UPI', icon: <FiSmartphone /> },
@@ -14,6 +15,7 @@ const PAYMENTS = [
 export default function CheckoutPage() {
   const { items, total, updateQuantity, removeItem, fetchCart } = useCart();
   const navigate = useNavigate();
+  const { showImages } = usePreferences();
   const [address, setAddress] = useState({ line1: '', city: '', state: '', pincode: '', phone: '' });
   const [payment, setPayment] = useState<'COD' | 'UPI' | 'Card'>('UPI');
   const [placing, setPlacing] = useState(false);
@@ -112,7 +114,15 @@ export default function CheckoutPage() {
               <div className="mb-4 flex max-h-80 flex-col gap-3 overflow-y-auto pr-1">
                 {items.map((it) => (
                   <div key={it._id} className="glass-soft flex items-center gap-3 rounded-xl p-2.5">
-                    <img src={it.image} alt={it.name} className="h-12 w-12 rounded-lg bg-white/10 object-cover" />
+                    {showImages ? (
+                      <img src={it.image} alt={it.name} className="h-12 w-12 rounded-lg bg-white/10 object-cover" />
+                    ) : (
+                      <div className="h-12 w-12 rounded-lg bg-white/10 flex items-center justify-center text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-60">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375 0 11-.75 0 .375 0 01.75 0z" />
+                        </svg>
+                      </div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-xs font-medium">{it.name}</p>
                       <p className="text-[11px] text-subtitle">₹{it.price.toLocaleString('en-IN')}</p>

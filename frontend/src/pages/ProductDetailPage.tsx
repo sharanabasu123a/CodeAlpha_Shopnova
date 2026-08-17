@@ -6,6 +6,7 @@ import type { Product } from '../lib/types';
 import { discountPct, fmtINR } from '../lib/types';
 import { useCart } from '../context/cartStore';
 import { useAuth } from '../context/authStore';
+import { usePreferences } from '../context/preferencesStore';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -26,6 +27,7 @@ export default function ProductDetailPage() {
 
   const addItem = useCart((s) => s.addItem);
   const user = useAuth((s) => s.user);
+  const { showImages } = usePreferences();
 
   useEffect(() => {
     setLoading(true);
@@ -101,7 +103,7 @@ export default function ProductDetailPage() {
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-4">
+    <div className="mx-auto max-w-7xl px-4 py-4 text-slate-800">
       {/* breadcrumb */}
       <nav className="mb-3 text-xs text-slate-400">
         Home › {product.category} › <span className="text-slate-600">{product.name}</span>
@@ -111,7 +113,16 @@ export default function ProductDetailPage() {
         {/* LEFT: image gallery (large & prominent) */}
         <div className="border-b border-slate-100 p-6 lg:border-r lg:border-b-0">
           <div className="relative mx-auto flex aspect-square max-w-xs items-center justify-center">
-            <img src={gallery[imgIdx]} alt={product.name} className="h-full w-full object-contain" />
+            {showImages ? (
+              <img src={gallery[imgIdx]} alt={product.name} className="h-full w-full object-contain" />
+            ) : (
+              <div className="flex flex-col items-center justify-center text-slate-400 gap-1.5 select-none w-full h-full bg-slate-50 border border-slate-200/50 rounded-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 opacity-60">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375 0 11-.75 0 .375 0 01.75 0z" />
+                </svg>
+                <span className="text-xs uppercase font-bold tracking-wider opacity-60">Image Hidden</span>
+              </div>
+            )}
             <button
               onClick={() => setWishlisted((v) => !v)}
               className="absolute top-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:text-red-500"
@@ -120,17 +131,19 @@ export default function ProductDetailPage() {
               <FiHeart className={`text-lg ${wishlisted ? 'fill-red-500 text-red-500' : ''}`} />
             </button>
           </div>
-          <div className="mt-4 flex justify-center gap-2">
-            {gallery.map((g, i) => (
-              <button
-                key={i}
-                onClick={() => setImgIdx(i)}
-                className={`h-16 w-16 overflow-hidden rounded-sm border-2 bg-white p-1 ${i === imgIdx ? 'border-[#2874f0]' : 'border-slate-200'}`}
-              >
-                <img src={g} alt="" className="h-full w-full object-contain" />
-              </button>
-            ))}
-          </div>
+          {showImages && (
+            <div className="mt-4 flex justify-center gap-2">
+              {gallery.map((g, i) => (
+                <button
+                  key={i}
+                  onClick={() => setImgIdx(i)}
+                  className={`h-16 w-16 overflow-hidden rounded-sm border-2 bg-white p-1 ${i === imgIdx ? 'border-[#2874f0]' : 'border-slate-200'}`}
+                >
+                  <img src={g} alt="" className="h-full w-full object-contain" />
+                </button>
+              ))}
+            </div>
+          )}
           {out && <p className="mt-4 rounded-sm bg-slate-100 py-2 text-center text-sm font-semibold text-slate-600">Currently Unavailable</p>}
         </div>
 

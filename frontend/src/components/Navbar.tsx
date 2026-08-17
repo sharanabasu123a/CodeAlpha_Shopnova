@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/authStore';
 import { useCart } from '../context/cartStore';
 import { api } from '../lib/api';
+import { usePreferences } from '../context/preferencesStore';
 
 const CAT_STRIP = [
   { name: 'Electronics', to: '/products?category=Electronics' },
@@ -34,6 +35,7 @@ export default function Navbar() {
   const setDrawer = useCart((s) => s.setDrawer);
   const navigate = useNavigate();
   const location = useLocation();
+  const { showImages, toggleShowImages } = usePreferences();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSug, setShowSug] = useState(false);
@@ -246,6 +248,19 @@ export default function Navbar() {
             >
               <FiPackage /> Orders
             </button>
+            
+            {/* Show/Hide Images Toggle */}
+            <button
+              onClick={toggleShowImages}
+              className="flex items-center gap-1.5 rounded-sm px-2 py-2 text-sm font-semibold text-white hover:bg-white/10 transition"
+              title={showImages ? "Hide product images" : "Show product images"}
+            >
+              <span className="text-xs">Images</span>
+              <div className={`relative h-5 w-9 rounded-full transition-colors duration-200 ${showImages ? 'bg-yellow-400' : 'bg-white/30'}`}>
+                <div className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform duration-200 ${showImages ? 'translate-x-4' : 'translate-x-0'}`} />
+              </div>
+            </button>
+
             <button
               onClick={() => setDrawer(true)}
               className="relative flex items-center gap-1 rounded-sm px-2 py-2 text-sm font-semibold text-white hover:bg-white/10"
@@ -313,6 +328,17 @@ export default function Navbar() {
                 ) : (
                   <Link to="/login" onClick={() => setMobileOpen(false)} className="rounded bg-[#2874f0] px-3 py-2.5 text-center font-semibold text-white">Login / Register</Link>
                 )}
+                
+                {/* Mobile Images Toggle */}
+                <div className="flex items-center justify-between border-t border-slate-200 mt-2 pt-3 px-3">
+                  <span className="text-slate-600 font-semibold">Show Images</span>
+                  <button
+                    onClick={toggleShowImages}
+                    className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${showImages ? 'bg-[#2874f0]' : 'bg-slate-300'}`}
+                  >
+                    <div className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform duration-200 ${showImages ? 'translate-x-5' : 'translate-x-0'}`} />
+                  </button>
+                </div>
               </div>
             </motion.div>
           </>

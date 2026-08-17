@@ -4,12 +4,14 @@ import { useAuth } from '../context/authStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiPlus, FiMinus, FiTrash2, FiShoppingBag, FiChevronDown } from 'react-icons/fi';
 import { discountPct, fmtINR } from '../lib/types';
+import { usePreferences } from '../context/preferencesStore';
 
 export default function CartDrawer() {
   const { setDrawer: setOpen, items, total, updateQuantity, removeItem } = useCart();
   const drawerOpen = useCart((s) => s.drawerOpen);
   const user = useAuth((s) => s.user);
   const navigate = useNavigate();
+  const { showImages } = usePreferences();
 
   const deliveryBy = new Date(Date.now() + 4 * 86400000).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
   const savings = items.reduce((s, i) => s + (i.mrp && i.mrp > i.price ? (i.mrp - i.price) * i.quantity : 0), 0);
@@ -71,7 +73,15 @@ export default function CartDrawer() {
                       return (
                         <div key={item._id} className="rounded-sm bg-white p-3 shadow-sm">
                           <div className="flex gap-3">
-                            <img src={item.image} alt={item.name} className="h-20 w-20 shrink-0 rounded-sm bg-white object-contain" />
+                            {showImages ? (
+                              <img src={item.image} alt={item.name} className="h-20 w-20 shrink-0 rounded-sm bg-white object-contain" />
+                            ) : (
+                              <div className="h-20 w-20 shrink-0 rounded-sm bg-white flex items-center justify-center text-slate-400 border border-slate-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 opacity-60">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375 0 11-.75 0 .375 0 01.75 0z" />
+                                </svg>
+                              </div>
+                            )}
                             <div className="min-w-0 flex-1">
                               <p className="truncate text-sm font-medium text-slate-700">{item.name}</p>
                               <div className="mt-1 flex items-baseline gap-1.5">

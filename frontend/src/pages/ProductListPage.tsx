@@ -4,6 +4,7 @@ import { FiChevronDown, FiFilter } from 'react-icons/fi';
 import ProductCard from '../components/ProductCard';
 import { api } from '../lib/api';
 import type { PagedProducts, ProductFilters } from '../lib/types';
+import { usePreferences } from '../context/preferencesStore';
 
 const PAGE_SIZE = 16;
 const SORTS = [
@@ -18,6 +19,7 @@ const DISCOUNTS = [10, 20, 30, 40];
 
 export default function ProductListPage() {
   const [params, setParams] = useSearchParams();
+  const { showImages, toggleShowImages } = usePreferences();
   const search = params.get('search') || '';
   const category = params.get('category') || 'All';
   const page = parseInt(params.get('page') || '1', 10);
@@ -92,6 +94,20 @@ export default function ProductListPage() {
       <p className="mb-3 flex items-center gap-2 border-b border-slate-200 pb-2 text-sm font-bold text-[#2874f0]">
         <FiFilter /> Filters
       </p>
+
+      {/* Display Options */}
+      <div className="mb-4 border-b border-slate-100 pb-3">
+        <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Display Options</p>
+        <label className="flex cursor-pointer items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={showImages}
+            onChange={toggleShowImages}
+            className="h-4 w-4 accent-[#2874f0]"
+          />
+          Show Product Images
+        </label>
+      </div>
 
       {/* Category */}
       <div className="mb-4">
